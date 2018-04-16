@@ -3,16 +3,13 @@ defmodule Hookex do
   Documentation for Hookex.
   """
 
-  @doc """
-  Hello world.
+  alias Hookex.Installer
 
-  ## Examples
+  def install_hooks do
+    IO.puts("hookex > setting up git hooks")
 
-      iex> Hookex.hello
-      :world
+    Installer.install()
 
-  """
-  def hello do
-    :world
+    IO.puts("hookex > done")
   end
 end
