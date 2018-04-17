@@ -1,4 +1,4 @@
 #!/bin/sh
 # <%= @identifier %> v<%= @version %>
 
-mix <%= @task_name %>
+mix <%= @task_name %> "$@"
