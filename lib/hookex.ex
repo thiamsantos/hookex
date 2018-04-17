@@ -2,9 +2,7 @@ defmodule Hookex do
   @moduledoc """
   Documentation for Hookex.
   """
-  alias Hookex.Installer
+  @version Mix.Project.config()[:version]
 
-  def install_hooks do
-    Installer.install()
-  end
+  def version, do: @version
 end

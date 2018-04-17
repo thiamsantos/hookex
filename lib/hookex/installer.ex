@@ -7,9 +7,41 @@ defmodule Hookex.Installer do
     IO.puts("[info] Setting up git hooks.")
 
     @basepath
-    |> File.exists?()
-    |> handle_folder_exists()
+    |> verify_folder_exists()
     |> install_hooks()
+  end
+
+  def uninstall do
+    IO.puts("[info] Uninstalling git hooks.")
+
+    @basepath
+    |> verify_folder_exists()
+    |> uninstall_hooks()
+  end
+
+
+  defp uninstall_hooks(:ok) do
+    hooks()
+    |> Enum.map(&get_hook_path/1)
+    |> Enum.filter(fn(hook) -> File.exists?(hook) end)
+    |> Enum.each(&delete_hook/1)
+
+    IO.puts("[info] Done.")
+    :ok
+  end
+
+  defp uninstall_hooks(:error) do
+    IO.puts("[error] Can't find .git/hooks directory.")
+    IO.puts("[info] Skipping git hooks uninstall.")
+    :error
+  end
+
+  defp delete_hook(hook) do
+    name = Path.basename(hook)
+    IO.puts("[info] Deleting #{name} hook.")
+    :ok = File.rm(hook)
+
+    :ok
   end
 
   defp install_hooks(:ok) do
@@ -27,15 +59,23 @@ defmodule Hookex.Installer do
     :error
   end
 
-  defp handle_folder_exists(true), do: :ok
-  defp handle_folder_exists(false), do: :error
+  defp verify_folder_exists(path) do
+    case File.exists?(path) do
+      true -> :ok
+      false -> :error
+    end
+  end
 
   defp create_hook(name) do
-    path = Path.join(@basepath, name)
+    path = get_hook_path(name)
 
     File.exists?(path)
     |> handle_file_exists(path)
     |> build_hook(name, path)
+  end
+
+  defp get_hook_path(name) do
+    Path.join(@basepath, name)
   end
 
   defp build_hook({:ok, :update_hook}, name, path) do
