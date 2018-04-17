@@ -2,14 +2,13 @@ defmodule Hookex do
   @moduledoc """
   Documentation for Hookex.
   """
-
   alias Hookex.Installer
 
   def install_hooks do
-    IO.puts("hookex > setting up git hooks")
+    IO.puts("[info] setting up git hooks")
 
     Installer.install()
 
-    IO.puts("hookex > done")
+    IO.puts("[info] done")
   end
 end
