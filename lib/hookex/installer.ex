@@ -4,12 +4,31 @@ defmodule Hookex.Installer do
   @identifier "hookex"
 
   def install do
+    IO.puts("[info] Setting up git hooks.")
+
+    @basepath
+    |> File.exists?()
+    |> handle_folder_exists()
+    |> install_hooks()
+  end
+
+  defp install_hooks(:ok) do
     hooks()
     |> Enum.filter(&task_exists?/1)
     |> Enum.each(&create_hook/1)
 
+    IO.puts("[info] Done.")
     :ok
   end
+
+  defp install_hooks(:error) do
+    IO.puts("[error] Can't find .git/hooks directory.")
+    IO.puts("[info] Skipping git hooks installation.")
+    :error
+  end
+
+  defp handle_folder_exists(true), do: :ok
+  defp handle_folder_exists(false), do: :error
 
   defp create_hook(name) do
     path = Path.join(@basepath, name)
@@ -20,17 +39,17 @@ defmodule Hookex.Installer do
   end
 
   defp build_hook({:ok, :update_hook}, name, path) do
-    IO.puts("[info] updating hook: #{name}")
+    IO.puts("[info] Updating #{name} hook.")
     do_build_hook(name, path)
   end
 
   defp build_hook({:ok, :hook_not_found}, name, path) do
-    IO.puts("[info] creating hook: #{name}")
+    IO.puts("[info] Creating #{name} hook.")
     do_build_hook(name, path)
   end
 
   defp build_hook({:ok, :skip_hook}, name, _path) do
-    IO.puts("[info] skipping existing user hook: #{name}")
+    IO.puts("[info] Skipping existing user #{name} hook.")
   end
 
   defp do_build_hook(name, path) do

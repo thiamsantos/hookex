@@ -10,7 +10,7 @@ by adding `hookex` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:hookex, "~> 0.1.0"}
+    {:hookex, "~> 0.1.0", only: :dev}
   ]
 end
 ```
